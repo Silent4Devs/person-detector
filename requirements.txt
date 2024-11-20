@@ -1,0 +1,6 @@
+opencv-python
+plyer
+requests
+transformers
+torch
+torchvision
