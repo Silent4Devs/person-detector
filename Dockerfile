@@ -13,4 +13,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 80
 
 # Command to run the Python script
-CMD ["python", "app.py"]
+CMD ["python", "main.py"]
