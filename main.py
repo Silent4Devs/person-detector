@@ -5,6 +5,12 @@ import requests
 from transformers import BlipProcessor, BlipForConditionalGeneration
 import torch
 from ultralytics import YOLO
+from dotenv import load_dotenv
+
+load_dotenv()
+
+OLLAMA_URL = os.getenv("OLLAMA_URL")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
 
 # Load BLIP (Image-to-Text) model and processor
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -23,12 +29,11 @@ def generate_image_description(image_path):
 # Function to communicate with LLaMA via Ollama API
 def analyze_with_llama(text):
     try:
-        ollama_url = "http://localhost:11434"
         payload = {
-            "model": "llama-3.1-8b",  # Specify the model name
+            "model": OLLAMA_MODEL,  # Specify the model name
             "input": f"Analyze this description: {text}"
         }
-        response = requests.post(f"{ollama_url}/api/generate", json=payload)
+        response = requests.post(f"{OLLAMA_URL}/api/generate", json=payload)
         if response.status_code == 200:
             return response.json().get('response', 'No response')
         else:
