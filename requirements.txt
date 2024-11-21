@@ -4,3 +4,4 @@ requests
 transformers
 torch
 torchvision
+ultralytics

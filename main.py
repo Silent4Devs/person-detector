@@ -4,6 +4,7 @@ from datetime import datetime
 import requests
 from transformers import BlipProcessor, BlipForConditionalGeneration
 import torch
+from ultralytics import YOLO  # YOLOv8 import
 
 # Load BLIP (Image-to-Text) model and processor
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -42,8 +43,8 @@ os.makedirs(output_folder, exist_ok=True)
 # Log file for detections
 log_file = os.path.join(output_folder, "detections.log")
 
-# Load pre-trained Haar cascade classifier for full body detection
-person_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fullbody.xml')
+# Load YOLOv8 model
+yolo_model = YOLO("yolov8n.pt")  # Replace with 'yolov8s.pt', 'yolov8m.pt', etc., for better accuracy
 
 # Open camera
 cap = cv2.VideoCapture(0)
@@ -53,11 +54,9 @@ while True:
     if not ret:
         break
 
-    # Convert frame to grayscale
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    # Detect persons
-    persons = person_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=3, minSize=(30, 30))
+    # Perform person detection using YOLOv8
+    results = yolo_model(frame, conf=0.5)
+    persons = [box for box in results[0].boxes.data if int(box[-1]) == 0]  # Class 0 corresponds to 'person'
 
     if len(persons) > 0:
         # Save image
@@ -78,8 +77,10 @@ while True:
             log.write(f"LLaMA Analysis: {llama_analysis}\n")
 
     # Draw rectangles around detected persons
-    for (x, y, w, h) in persons:
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+    for person in persons:
+        x1, y1, x2, y2, conf, cls = person.tolist()
+        cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
+        cv2.putText(frame, f"Person {conf:.2f}", (int(x1), int(y1) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
     # Display the video feed
     cv2.imshow('Person Detection', frame)
