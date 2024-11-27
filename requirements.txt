@@ -6,3 +6,6 @@ torch
 torchvision
 ultralytics
 python-dotenv
+deepface
+tf-keras
+tensorflow==2.10
