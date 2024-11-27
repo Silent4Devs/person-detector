@@ -1,6 +1,7 @@
 import cv2
 import os
 import torch
+import requests
 from datetime import datetime, timedelta
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from ultralytics import YOLO
@@ -25,22 +26,19 @@ def generate_image_description(image_path):
     caption = processor.decode(outputs[0], skip_special_tokens=True)
     return caption
 
-def calculate_iou(box1, box2):
-    """Calcula el Intersection-over-Union (IoU) de dos cajas delimitadoras."""
-    x1, y1, x2, y2 = box1
-    px1, py1, px2, py2 = box2
-
-    inter_x1 = max(x1, px1)
-    inter_y1 = max(y1, py1)
-    inter_x2 = min(x2, px2)
-    inter_y2 = min(y2, py2)
-
-    inter_area = max(0, inter_x2 - inter_x1) * max(0, inter_y2 - inter_y1)
-    box1_area = (x2 - x1) * (y2 - y1)
-    box2_area = (px2 - px1) * (py2 - py1)
-
-    iou = inter_area / float(box1_area + box2_area - inter_area)
-    return iou
+def analyze_with_llama(text):
+    try:
+        payload = {
+            "model": OLLAMA_MODEL,  # Specify the model name
+            "input": f"Analyze this description: {text}"
+        }
+        response = requests.post(f"{OLLAMA_URL}/api/generate", json=payload)
+        if response.status_code == 200:
+            return response.json().get('response', 'No response')
+        else:
+            return f"Ollama Error: {response.status_code}"
+    except Exception as e:
+        return f"Error communicating with Ollama: {str(e)}"
 
 output_folder = "detections"
 os.makedirs(output_folder, exist_ok=True)
@@ -67,6 +65,23 @@ def is_new_person(bbox, current_time, threshold_seconds=5):
 
     detected_persons[(x1, y1, x2, y2)] = current_time
     return True
+
+def calculate_iou(box1, box2):
+    """Calcula el Intersection-over-Union (IoU) de dos cajas delimitadoras."""
+    x1, y1, x2, y2 = box1
+    px1, py1, px2, py2 = box2
+
+    inter_x1 = max(x1, px1)
+    inter_y1 = max(y1, py1)
+    inter_x2 = min(x2, px2)
+    inter_y2 = min(y2, py2)
+
+    inter_area = max(0, inter_x2 - inter_x1) * max(0, inter_y2 - inter_y1)
+    box1_area = (x2 - x1) * (y2 - y1)
+    box2_area = (px2 - px1) * (py2 - py1)
+
+    iou = inter_area / float(box1_area + box2_area - inter_area)
+    return iou
 
 def analyze_face(image):
     """Realiza un análisis facial usando DeepFace y devuelve el género predominante."""
@@ -107,6 +122,15 @@ while True:
             timestamp = current_time.strftime("%Y-%m-%d_%H-%M-%S")
             face_path = os.path.join(output_folder, f"person_{timestamp}.jpg")
             cv2.imwrite(face_path, face_crop)
+
+            image_description = generate_image_description(face_path)
+            llama_analysis = analyze_with_llama(image_description)
+
+            # Log event
+            with open(log_file, "a") as log:
+                log.write(f"Person detected at {timestamp}.\n")
+                log.write(f"Image Description: {image_description}\n")
+                log.write(f"LLaMA Analysis: {llama_analysis}\n")
 
             # Analizar género de la persona
             gender = analyze_face(face_path)
