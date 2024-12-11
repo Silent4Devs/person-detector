@@ -81,7 +81,7 @@ os.makedirs(output_folder, exist_ok=True)
 log_file = os.path.join(output_folder, "detections.log")
 
 # Abrir RTSP cámara
-rtsp_url = "rtsp://desarrollo:Password123.@192.168.6.31:554/Streaming/Channels/101"
+rtsp_url = "rtsp://desarrollo:Password123.@192.168.6.31:554/Streaming/Channels/202"
 cap = cv2.VideoCapture(rtsp_url)
 
 if not cap.isOpened():
