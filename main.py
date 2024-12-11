@@ -6,122 +6,110 @@ from transformers import BlipProcessor, BlipForConditionalGeneration
 from ultralytics import YOLO
 from deepface import DeepFace
 from dotenv import load_dotenv
+from PIL import Image
 
+# Cargar variables de entorno
 load_dotenv()
 
-OLLAMA_URL = os.getenv("OLLAMA_URL")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
-
-# Load BLIP (Image-to-Text) model and processor
+# Configurar BLIP (Image-to-Text)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base").to(device)
 
+# Función para generar descripciones de imágenes
 def generate_image_description(image_path):
-    from PIL import Image
     image = Image.open(image_path).convert("RGB")
     inputs = processor(image, return_tensors="pt").to(device)
     outputs = model.generate(**inputs)
     caption = processor.decode(outputs[0], skip_special_tokens=True)
     return caption
 
-def calculate_iou(box1, box2):
-    """Calcula el Intersection-over-Union (IoU) de dos cajas delimitadoras."""
-    x1, y1, x2, y2 = box1
-    px1, py1, px2, py2 = box2
+# Configurar YOLOv8n
+yolo_model = YOLO("yolov8n.pt")  # Modelo preentrenado
+PERSON_CLASS = 0
+PACKAGE_CLASSES = [22, 23]  # IDs de las clases de paquetes (por ejemplo, cajas y sobres)
 
-    inter_x1 = max(x1, px1)
-    inter_y1 = max(y1, py1)
-    inter_x2 = min(x2, px2)
-    inter_y2 = min(y2, py2)
-
-    inter_area = max(0, inter_x2 - inter_x1) * max(0, inter_y2 - inter_y1)
-    box1_area = (x2 - x1) * (y2 - y1)
-    box2_area = (px2 - px1) * (py2 - py1)
-
-    iou = inter_area / float(box1_area + box2_area - inter_area)
-    return iou
-
-output_folder = "detections"
-os.makedirs(output_folder, exist_ok=True)
-
-log_file = os.path.join(output_folder, "detections.log")
-
-yolo_model = YOLO("yolov8n.pt")  # Ajustar según el modelo deseado (n, s, m, etc.)
-
-detected_persons = {}
-
-def is_new_person(bbox, current_time, threshold_seconds=5):
-    """Determina si una persona detectada es nueva o ya fue registrada."""
-    global detected_persons
-    x1, y1, x2, y2 = bbox
-
-    for (px1, py1, px2, py2), last_time in list(detected_persons.items()):
-        iou = calculate_iou((x1, y1, x2, y2), (px1, py1, px2, py2))
-        if iou > 0.5:  # Considera misma persona si IoU > 0.5
-            if (current_time - last_time).total_seconds() > threshold_seconds:
-                detected_persons[(px1, py1, px2, py2)] = current_time
-                return True
-            else:
-                return False
-
-    detected_persons[(x1, y1, x2, y2)] = current_time
-    return True
-
+# Configurar DeepFace para análisis facial
 def analyze_face(image):
-    """Realiza un análisis facial usando DeepFace y devuelve el género predominante."""
+    """Analiza género de un rostro usando DeepFace."""
     try:
         analysis = DeepFace.analyze(img_path=image, actions=['gender'], enforce_detection=False)
         if isinstance(analysis, list):
             analysis = analysis[0]
-        
         gender_scores = analysis.get("gender", {})
-        if not gender_scores:
-            return "Unknown"
-        
-        # Seleccionar el género predominante
-        return "Feminine" if gender_scores.get("Woman", 0) > gender_scores.get("Man", 0) else "Masculine"
-    except Exception as e:
+        return "Femenina" if gender_scores.get("Woman", 0) > gender_scores.get("Man", 0) else "Masculino"
+    except Exception:
         return "Unknown"
 
-# Abrir cámara
-cap = cv2.VideoCapture(0)
+# Detección de rostros previos con tiempo de espera
+detected_faces = {}
+
+def should_process_person(face_id, current_time, wait_time=60):
+    """Determina si debe procesarse una persona según el tiempo de espera."""
+    last_time = detected_faces.get(face_id)
+    if last_time is None or (current_time - last_time).total_seconds() > wait_time:
+        detected_faces[face_id] = current_time
+        return True
+    return False
+
+# Configuración de salida
+output_folder = "detections"
+os.makedirs(output_folder, exist_ok=True)
+log_file = os.path.join(output_folder, "detections.log")
+
+# Abrir RTSP cámara
+rtsp_url = "rtsp://desarrollo:Password123.@192.168.6.31:554/Streaming/Channels/202"
+cap = cv2.VideoCapture(rtsp_url)
+
+if not cap.isOpened():
+    print("Error: Could not open RTSP stream.")
+    exit()
 
 while True:
     ret, frame = cap.read()
     if not ret:
         break
 
-    # Detectar personas usando YOLO
+    # Detectar objetos usando YOLO
     results = yolo_model(frame, conf=0.5, verbose=False)
-    persons = [box for box in results[0].boxes.data if int(box[-1]) == 0]  # Clase 0 corresponde a 'person'
+    boxes = results[0].boxes
 
+    persons = []
+
+    for box in boxes:
+        cls = int(box.cls[0])
+        x1, y1, x2, y2 = map(int, box.xyxy[0])
+        conf = float(box.conf[0])
+        if cls == PERSON_CLASS:
+            persons.append((x1, y1, x2, y2, conf))
+
+    # Procesar detección de personas
     for person in persons:
-        x1, y1, x2, y2, conf, cls = map(int, person.tolist())
+        x1, y1, x2, y2, conf = person
         current_time = datetime.now()
+        face_id = (x1, y1, x2, y2)  # Identificador basado en la caja delimitadora
 
-        # Verifica si es una nueva persona
-        if is_new_person((x1, y1, x2, y2), current_time):
-            # Recortar la región del rostro
-            face_crop = frame[y1:y2, x1:x2]
+        if should_process_person(face_id, current_time):
+            # Guardar imagen completa
             timestamp = current_time.strftime("%Y-%m-%d_%H-%M-%S")
-            face_path = os.path.join(output_folder, f"person_{timestamp}.jpg")
-            cv2.imwrite(face_path, face_crop)
+            image_path = os.path.join(output_folder, f"frame_{timestamp}.jpg")
+            cv2.imwrite(image_path, frame)
 
-            # Analizar género de la persona
-            gender = analyze_face(face_path)
-        else:
-            # Para una persona ya registrada, usa el género de la última vez
-            gender = gender
+            # Generar descripción e información adicional
+            image_description = generate_image_description(image_path)
+            gender = analyze_face(image_path)
 
-        # Dibujar rectángulo y género en el cuadro
+            # Registrar evento
+            with open(log_file, "a") as log:
+                log.write(f"[{timestamp}] New Person Detected. Gender: {gender}. Description: {image_description}\n")
+
         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        cv2.putText(frame, f"{gender}", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+        cv2.putText(frame, "Person", (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-    # Mostrar el feed de video
-    cv2.imshow('Person Detection', frame)
+    # Mostrar frame
+    cv2.imshow("Person Detection", frame)
 
-    # Salir del bucle al presionar 'q'
+    # Salir con 'q'
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
