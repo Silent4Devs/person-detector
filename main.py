@@ -47,7 +47,7 @@ os.makedirs(output_folder, exist_ok=True)
 
 log_file = os.path.join(output_folder, "detections.log")
 
-yolo_model = YOLO("yolov8n.pt")  # Ajustar según el modelo deseado (n, s, m, etc.)
+yolo_model = YOLO("yolov8n.pt")
 
 detected_persons = {}
 
@@ -68,21 +68,34 @@ def is_new_person(bbox, current_time, threshold_seconds=5):
     detected_persons[(x1, y1, x2, y2)] = current_time
     return True
 
-def analyze_face(image):
-    """Realiza un análisis facial usando DeepFace y devuelve el género predominante."""
+def analyze_person(image_path):
+    """Analiza una persona detectada usando DeepFace y BLIP."""
     try:
-        analysis = DeepFace.analyze(img_path=image, actions=['gender'], enforce_detection=False)
+        # Análisis de género con DeepFace
+        analysis = DeepFace.analyze(img_path=image_path, actions=['gender'], enforce_detection=False)
         if isinstance(analysis, list):
             analysis = analysis[0]
-        
+
         gender_scores = analysis.get("gender", {})
         if not gender_scores:
-            return "Unknown"
-        
-        # Seleccionar el género predominante
-        return "Feminine" if gender_scores.get("Woman", 0) > gender_scores.get("Man", 0) else "Masculine"
+            gender = "Unknown"
+        else:
+            gender = "Feminine" if gender_scores.get("Woman", 0) > gender_scores.get("Man", 0) else "Masculine"
+
     except Exception as e:
-        return "Unknown"
+        gender = "Unknown"
+
+    # Si el género es desconocido, intenta con la descripción generada
+    if gender == "Unknown":
+        description = generate_image_description(image_path)
+        if "woman" in description.lower():
+            gender = "Feminine"
+        elif "man" in description.lower():
+            gender = "Masculine"
+        else:
+            gender = "Unknown"
+
+    return gender
 
 # Abrir cámara
 cap = cv2.VideoCapture(0)
@@ -108,11 +121,15 @@ while True:
             face_path = os.path.join(output_folder, f"person_{timestamp}.jpg")
             cv2.imwrite(face_path, face_crop)
 
-            # Analizar género de la persona
-            gender = analyze_face(face_path)
-        else:
-            # Para una persona ya registrada, usa el género de la última vez
-            gender = gender
+            # Analizar género de la persona usando la nueva función combinada
+            gender = analyze_person(face_path)
+
+            # Registrar en el log
+            description = generate_image_description(face_path)
+            log_entry = f"[{timestamp}] New Person Detected. Gender: {gender}. Description: {description}"
+            with open(log_file, "a") as log:
+                log.write(log_entry + "\n")
+
 
         # Dibujar rectángulo y género en el cuadro
         cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)

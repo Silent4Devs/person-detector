@@ -8,4 +8,5 @@ ultralytics
 python-dotenv
 deepface
 tf-keras
-tensorflow==2.10
+tensorflow-cpu
+mysql-connector-python
