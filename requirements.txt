@@ -10,3 +10,5 @@ deepface
 tf-keras
 tensorflow-cpu
 mysql-connector-python
+fastapi
+uvicorn

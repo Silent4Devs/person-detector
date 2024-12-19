@@ -38,20 +38,40 @@ def connect_to_db():
 def parse_log_file(log_file):
     """
     Parsea el archivo detections.log y extrae los datos de detección.
+    Maneja registros distribuidos en múltiples líneas.
     """
     detections = []
+    current_detection = {}
+
     with open(log_file, "r") as file:
         for line in file:
-            # Formato esperado:
-            # [2024-12-13_14-33-23] New Person Detected. Gender: Masculine. Description: a man sitting in front of a sign
-            parts = line.strip().split("] ", 1)
-            if len(parts) == 2:
-                timestamp = parts[0][1:]  # Remover el corchete inicial
-                rest = parts[1]
-                gender = rest.split("Gender: ")[1].split(". Description: ")[0]
-                description = rest.split(". Description: ")[1]
-                detections.append((timestamp, gender, description))
-    return detections
+            line = line.strip()
+
+            if line.startswith("["):
+                if current_detection:
+                    detections.append(current_detection)
+                current_detection = {"timestamp": line[1:].split("]")[0]}
+
+            elif line.startswith("Gender: "):
+                current_detection["gender"] = line.split("Gender: ")[1]
+
+            elif line.startswith("Description: "):
+                current_detection["description"] = line.split("Description: ")[1]
+
+        # Agregar la última detección si existe
+        if current_detection:
+            detections.append(current_detection)
+
+    # Formatear detecciones en la salida esperada
+    formatted_detections = [
+        (
+            det.get("timestamp", "Unknown"),
+            det.get("gender", "Unknown"),
+            det.get("description", "No description"))
+        for det in detections
+    ]
+
+    return formatted_detections
 
 def insert_into_database(connection, detections, image_folder):
     """
@@ -59,8 +79,8 @@ def insert_into_database(connection, detections, image_folder):
     """
     cursor = connection.cursor()
     insert_query = """
-        INSERT INTO detections (gender_detected, datetime_detected, photo, photo_context, ia_analysis)
-        VALUES (%s, %s, %s, %s, %s)
+        INSERT INTO detections (gender_detected, datetime_detected, photo, photo_context)
+        VALUES (%s, %s, %s, %s)
     """
     for timestamp, gender, description in detections:
         # Crear el nombre de archivo para la imagen
@@ -75,8 +95,7 @@ def insert_into_database(connection, detections, image_folder):
                     gender,             # gender_detected
                     timestamp,          # datetime_detected
                     image_path,         # photo
-                    image_path,         # photo_context
-                    description         # ia_analysis
+                    description         # photo_context
                 )
                 cursor.execute(insert_query, values)
             except mysql.connector.Error as err:

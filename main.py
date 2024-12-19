@@ -1,7 +1,7 @@
 import cv2
 import os
 import torch
-import requests
+#import requests
 from datetime import datetime
 from transformers import BlipProcessor, BlipForConditionalGeneration
 from ultralytics import YOLO
@@ -13,7 +13,6 @@ load_dotenv()
 OLLAMA_URL = os.getenv("OLLAMA_URL")  # URL de tu servidor IA
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")  # Modelo IA en tu servidor
 
-# Load BLIP (Image-to-Text) model and processor
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base").to(device)
@@ -27,19 +26,19 @@ def generate_image_description(image_path):
     caption = processor.decode(outputs[0], skip_special_tokens=True)
     return caption
 
-def analyze_with_server(image_path):
-    """Envía la imagen al servidor IA para su análisis."""
-    try:
-        with open(image_path, 'rb') as image_file:
-            files = {'file': image_file}
-            data = {'model': OLLAMA_MODEL}
-            response = requests.post(OLLAMA_URL, files=files, data=data, timeout=10)
-            if response.status_code == 200:
-                return response.json().get("result", "Unknown Analysis")  # Ajusta según respuesta del servidor
-            else:
-                return f"Llama Server Error: {response.status_code}"
-    except Exception as e:
-        return f"Error: {str(e)}"
+# def analyze_with_server(image_path):
+#     """Envía la imagen al servidor IA para su análisis."""
+#     try:
+#         with open(image_path, 'rb') as image_file:
+#             files = {'file': image_file}
+#             data = {'model': OLLAMA_MODEL}
+#             response = requests.post(OLLAMA_URL, files=files, data=data, timeout=10)
+#             if response.status_code == 200:
+#                 return response.json().get("result", "Unknown Analysis")
+#             else:
+#                 return f"Llama Server Error: {response.status_code}"
+#     except Exception as e:
+#         return f"Error: {str(e)}"
 
 def calculate_iou(box1, box2):
     """Calcula el Intersection-over-Union (IoU) de dos cajas delimitadoras."""
@@ -77,7 +76,6 @@ def is_new_person(bbox, current_time, threshold_seconds=5):
 
 def analyze_person(image_path):
     """Analiza la persona detectada usando DeepFace, BLIP y el servidor IA."""
-    # DeepFace para género
     try:
         analysis = DeepFace.analyze(img_path=image_path, actions=['gender'], enforce_detection=False)
         gender_scores = analysis[0].get("gender", {}) if isinstance(analysis, list) else analysis.get("gender", {})
@@ -85,15 +83,12 @@ def analyze_person(image_path):
     except Exception:
         gender = "Unknown"
 
-    # BLIP para descripción
     description = generate_image_description(image_path)
 
-    # Análisis adicional con servidor de IA
-    server_response = analyze_with_server(image_path)
+#    server_response = analyze_with_server(image_path)
 
-    return gender, description, server_response
+    return gender, description,
 
-# Captura desde cámara
 cap = cv2.VideoCapture(0)
 
 while True:
@@ -114,10 +109,9 @@ while True:
             face_path = os.path.join(output_folder, f"person_{timestamp}.jpg")
             cv2.imwrite(face_path, face_crop)
 
-            gender, description, server_response = analyze_person(face_path)
+            gender, description, = analyze_person(face_path)
 
-            # Registrar log con la respuesta del servidor
-            log_entry = f"[{timestamp}] New Person Detected. \n  Gender: {gender}. \n Description: {description}. \n IA Analysis: {server_response}"
+            log_entry = f"[{timestamp}] New Person Detected. \n  Gender: {gender}. \n Description: {description}"
             with open(log_file, "a") as log:
                 log.write(log_entry + "\n")
 
