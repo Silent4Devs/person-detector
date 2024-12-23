@@ -28,24 +28,24 @@ services:
     networks:
       - trackernetwork
 
-  ollama:
-      image: ollama/ollama:latest
-      container_name: ollama
-      restart: always
-      ports:
-        - "11434:11434"
-      environment:
-        - OLLAMA_NUM_THREADS=8
-      volumes:
-        - ollama-local:/root/.ollama
-      networks:
-        - trackernetwork
+#  ollama:
+#      image: ollama/ollama:latest
+#      container_name: ollama
+#      restart: always
+#      ports:
+#        - "11434:11434"
+#      environment:
+#        - OLLAMA_NUM_THREADS=8
+#      volumes:
+#        - ollama-local:/root/.ollama
+#      networks:
+#        - trackernetwork
 
 volumes:
   tracker-database:
     driver: local
-  ollama-local:
-    driver: local
+#  ollama-local:
+#    driver: local
 
 networks:
   trackernetwork:
