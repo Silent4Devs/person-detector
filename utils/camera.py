@@ -1,16 +1,19 @@
 import cv2
+import sys
 import os
 from datetime import datetime
 from ultralytics import YOLO
 from deepface import DeepFace
 from dotenv import load_dotenv
+from models.detections import analyze_person, device
+from transformers import BlipForConditionalGeneration
 
 load_dotenv()
 
-OLLAMA_URL = os.getenv("OLLAMA_URL")  # URL de tu servidor IA
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")  # Modelo IA en tu servidor
+# OLLAMA_URL = os.getenv("OLLAMA_URL")  # URL de tu servidor IA
+# OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")  # Modelo IA en tu servidor
 
-rtsp_url = "rtsp://desarrollo:Password123.@192.168.6.31:554/Streaming/Channels/102"
+rtsp_url=os.getenv("rtsp_url")
 
 def calculate_iou(box1, box2):
     """Calcula el Intersection-over-Union (IoU) de dos cajas delimitadoras."""

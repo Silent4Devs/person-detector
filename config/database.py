@@ -17,7 +17,7 @@ db_user = os.getenv("DB_USER")
 db_password = os.getenv("DB_PASSWORD")
 db_name = os.getenv("DB_NAME")
 
-def connect_to_db():
+def get_db_connection():
     """
     Conecta a la base de datos MySQL usando las credenciales del archivo .env.
     """
@@ -116,7 +116,7 @@ if __name__ == "__main__":
     # Conectar a la base de datos
     conn = None
     try:
-        conn = connect_to_db()
+        conn = get_db_connection()
         insert_into_database(conn, detections, image_folder)
         print("Datos insertados correctamente en la base de datos.")
     except Exception as e:
