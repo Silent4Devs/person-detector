@@ -12,3 +12,4 @@ tensorflow-cpu
 mysql-connector-python
 fastapi
 uvicorn
+pydantic

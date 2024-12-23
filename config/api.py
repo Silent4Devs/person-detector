@@ -1,10 +1,16 @@
-from fastapi import FastAPI, HTTPException, APIRouter
+"""
+Este módulo define la configuración y API principal para el proyecto.
+"""
+
 from typing import List
-from datetime import datetime
+from fastapi import FastAPI, HTTPException, APIRouter
 from pydantic import BaseModel
 from config.database import get_db_connection
 # Modelo para representar una detección
 class Detection(BaseModel):
+    """
+    Clase de ejemplo para gestionar la API.
+    """
     id: int
     gender_detected: str
     datetime_detected: str
@@ -14,9 +20,9 @@ class Detection(BaseModel):
 
 # Crear la aplicación FastAPI
 app = FastAPI()
-detections=APIRouter()
+detection=APIRouter()
 
-@detections.get("/detections", response_model=List[Detection])
+@detection.get("/detections", response_model=List[Detection])
 def get_all_detections():
     """
     Devuelve todas las detecciones de la base de datos.
@@ -36,7 +42,7 @@ def get_all_detections():
 
     return detections
 
-# @detections.get("/detections/{detection_id}", response_model=Detection)
+# @detection.get("/detections/{detection_id}", response_model=Detection)
 # def get_detection_by_id(detection_id: int):
 #     """
 #     Devuelve una detección específica por ID.
