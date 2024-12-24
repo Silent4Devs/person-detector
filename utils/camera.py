@@ -5,6 +5,7 @@ from datetime import datetime
 from ultralytics import YOLO
 from deepface import DeepFace
 from dotenv import load_dotenv
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from models.detections import analyze_person, device
 from transformers import BlipForConditionalGeneration
 
@@ -69,12 +70,12 @@ while True:
         current_time = datetime.now()
 
         if is_new_person((x1, y1, x2, y2), current_time):
-            face_crop = frame[y1:y2, x1:x2]
+            # Guardar el frame completo
             timestamp = current_time.strftime("%Y-%m-%d_%H-%M-%S")
-            face_path = os.path.join(output_folder, f"person_{timestamp}.jpg")
-            cv2.imwrite(face_path, face_crop)
+            full_image_path = os.path.join(output_folder, f"person_{timestamp}.jpg")
+            cv2.imwrite(full_image_path, frame)
 
-            gender, description, = analyze_person(face_path)
+            gender, description, = analyze_person(full_image_path)
 
             log_entry = f"[{timestamp}] New Person Detected. \n  Gender: {gender}.\n Description: {description}"
             with open(log_file, "a") as log:

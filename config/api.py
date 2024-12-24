@@ -4,6 +4,7 @@ Este módulo define la configuración y API principal para el proyecto.
 
 from typing import List
 from fastapi import FastAPI, HTTPException, APIRouter
+from datetime import datetime
 from pydantic import BaseModel
 from config.database import get_db_connection
 # Modelo para representar una detección
@@ -13,7 +14,7 @@ class Detection(BaseModel):
     """
     id: int
     gender_detected: str
-    datetime_detected: str
+    datetime_detected: datetime
     photo: str
     photo_context: str
     #ia_analysis: str

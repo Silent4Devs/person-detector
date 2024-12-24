@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
-#from utils.camera import start_detection
+from utils.camera import start_detection
 from config.api import detection
 
 
@@ -24,5 +24,13 @@ def message():
     """
     return {"Hello World!"}
 
-# if __name__ == "__main__":
-#     start_detection()
+if __name__ == "__main__":
+    import sys
+
+    # Condicional para decidir si ejecutar `start_detection()`
+    if "start_detection" in sys.argv:
+        from utils.camera import start_detection
+        start_detection()
+    else:
+        import uvicorn
+        uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
