@@ -28,9 +28,6 @@ def start_background_detection():
 
 start_background_detection()  # Llamar a la función para iniciar la detección al iniciar
 
-# app = FastAPI(
-#     lifespan=lambda app: run_detection()  # Ejecutamos la tarea de detección al iniciar
-# )
 templates = Jinja2Templates(directory="templates")
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)

@@ -35,6 +35,29 @@ def get_db_connection():
         print(f"Error de conexión a la base de datos: {err}")
         raise
 
+def create_detections_table(connection):
+    """
+    Crea la tabla 'detections' en la base de datos si no existe.
+    """
+    cursor = connection.cursor()
+    create_table_query = """
+    CREATE TABLE IF NOT EXISTS detections (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        gender_detected VARCHAR(50),
+        datetime_detected DATETIME,
+        photo VARCHAR(255),
+        photo_context TEXT
+    );
+    """
+    try:
+        cursor.execute(create_table_query)
+        connection.commit()
+        print("Tabla 'detections' creada o ya existe.")
+    except mysql.connector.Error as err:
+        print(f"Error al crear la tabla: {err}")
+    finally:
+        cursor.close()
+
 def parse_log_file(log_file):
     """
     Parsea el archivo detections.log y extrae los datos de detección.
@@ -73,38 +96,23 @@ def parse_log_file(log_file):
 
     return formatted_detections
 
-def insert_into_database(connection, detections, image_folder):
+def insert_into_database(connection, gender, timestamp, description, image_path):
     """
-    Inserta las detecciones y sus imágenes asociadas en la base de datos.
+    Inserta los detalles de la detección en la base de datos.
     """
     cursor = connection.cursor()
     insert_query = """
         INSERT INTO detections (gender_detected, datetime_detected, photo, photo_context)
         VALUES (%s, %s, %s, %s)
     """
-    for timestamp, gender, description in detections:
-        # Crear el nombre de archivo para la imagen
-        image_name = f"person_{timestamp.replace(':', '-').replace(' ', '_')}.jpg"
-        image_path = os.path.join(image_folder, image_name)
-
-        # Verifica si la imagen existe antes de insertar
-        if os.path.exists(image_path):
-            try:
-                # Valores para insertar
-                values = (
-                    gender,             # gender_detected
-                    timestamp,          # datetime_detected
-                    image_path,         # photo
-                    description         # photo_context
-                )
-                cursor.execute(insert_query, values)
-            except mysql.connector.Error as err:
-                print(f"Error al insertar datos: {err}")
-        else:
-            print(f"Imagen no encontrada para {timestamp}: {image_path}")
-
-    connection.commit()
-    cursor.close()
+    try:
+        values = (gender, timestamp, image_path, description)
+        cursor.execute(insert_query, values)
+        connection.commit()
+    except mysql.connector.Error as err:
+        print(f"Error al insertar datos: {err}")
+    finally:
+        cursor.close()
 
 if __name__ == "__main__":
     log_file = "detections/detections.log"

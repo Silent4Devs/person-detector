@@ -15,3 +15,4 @@ uvicorn
 pydantic
 jinja2
 python-multipart
+fastapi[standard]

@@ -1,16 +1,17 @@
-# Use an official Python image as the base
-FROM python:3.9-slim
 
-# Set the working directory inside the container
-WORKDIR /app
+FROM python:3.10-slim
 
-# Copy the application files into the container
-COPY . /app
 
-RUN pip install --no-cache-dir -r requirements.txt
+WORKDIR /code
 
-# Expose port (optional, if needed for API serving)
-EXPOSE 80
 
-# Command to run the Python script
-CMD ["python", "main.py"]
+COPY ./requirements.txt /code/requirements.txt
+
+
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+
+
+COPY . /code
+
+
+CMD ["fastapi", "run", "app/main.py", "--port", "8000"]
