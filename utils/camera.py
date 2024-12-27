@@ -20,7 +20,7 @@ os.makedirs(output_folder, exist_ok=True)
 log_file = os.path.join(output_folder, "detections.log")
 
 # Cargar modelo YOLO
-yolo_model = YOLO("yolov8n.pt")
+yolo_model = YOLO("yolov8s.pt")
 
 class DetectionTask:
     def __init__(self, rtsp_url):
@@ -42,7 +42,7 @@ class DetectionTask:
         return iou
         #pass
 
-    def is_new_person(self, bbox, current_time, detected_persons, threshold_seconds=5):
+    def is_new_person(self, bbox, current_time, detected_persons, threshold_seconds=70, iou_threshold=0.7):
         """Determina si una persona detectada es nueva o ya fue registrada."""
         #global detected_persons
         x1, y1, x2, y2 = bbox
@@ -78,7 +78,7 @@ class DetectionTask:
                 x1, y1, x2, y2, conf, cls = map(int, person.tolist())
                 current_time = datetime.now()
 
-                if self.is_new_person((x1, y1, x2, y2), current_time, detected_persons):
+                if self.is_new_person((x1, y1, x2, y2), current_time, detected_persons, threshold_seconds=70, iou_threshold=0.7):
                     timestamp = current_time.strftime("%Y-%m-%d_%H-%M-%S")
                     full_image_path = os.path.join(output_folder, f"person_{timestamp}.jpg")
                     cv2.imwrite(full_image_path, frame)
