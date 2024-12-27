@@ -4,7 +4,6 @@ from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.gzip import GZipMiddleware
-from utils.camera import start_detection
 from config.api import detection
 
 load_dotenv()
@@ -13,6 +12,8 @@ app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+app.include_router(detection)
 
 app.title = os.getenv("APP_NAME")
 app.version = os.getenv("APP_VERSION")

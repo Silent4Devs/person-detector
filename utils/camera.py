@@ -11,10 +11,18 @@ from transformers import BlipForConditionalGeneration
 
 load_dotenv()
 
-# OLLAMA_URL = os.getenv("OLLAMA_URL")  # URL de tu servidor IA
-# OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")  # Modelo IA en tu servidor
+# Configuración de variables de entorno
+rtsp_url = os.getenv("rtsp_url")
 
-rtsp_url=os.getenv("rtsp_url")
+# Crear carpeta para guardar capturas y archivo de registro
+output_folder = "detections"
+os.makedirs(output_folder, exist_ok=True)
+log_file = os.path.join(output_folder, "detections.log")
+
+# Cargar modelo YOLO
+yolo_model = YOLO("yolov8n.pt")
+
+detected_persons = {}
 
 def calculate_iou(box1, box2):
     """Calcula el Intersection-over-Union (IoU) de dos cajas delimitadoras."""
@@ -30,13 +38,6 @@ def calculate_iou(box1, box2):
     iou = inter_area / float(box1_area + box2_area - inter_area)
     return iou
 
-output_folder = "detections"
-os.makedirs(output_folder, exist_ok=True)
-log_file = os.path.join(output_folder, "detections.log")
-
-yolo_model = YOLO("yolov8n.pt")
-detected_persons = {}
-
 def is_new_person(bbox, current_time, threshold_seconds=5):
     """Determina si una persona detectada es nueva o ya fue registrada."""
     global detected_persons
@@ -50,18 +51,19 @@ def is_new_person(bbox, current_time, threshold_seconds=5):
     detected_persons[(x1, y1, x2, y2)] = current_time
     return True
 
+# Inicializar captura de video
 cap = cv2.VideoCapture(rtsp_url)
 if not cap.isOpened():
-    print("Error: Could not open RTSP stream.")
+    print("Error: No se pudo abrir el flujo RTSP.")
     exit()
-
-clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
 
 while True:
     ret, frame = cap.read()
     if not ret:
+        print("Error: No se pudo leer el frame del flujo RTSP.")
         break
 
+    # Realizar detecciones con YOLO
     results = yolo_model(frame, conf=0.5, verbose=False)
     persons = [box for box in results[0].boxes.data if int(box[-1]) == 0]
 
@@ -75,25 +77,17 @@ while True:
             full_image_path = os.path.join(output_folder, f"person_{timestamp}.jpg")
             cv2.imwrite(full_image_path, frame)
 
-            gender, description, = analyze_person(full_image_path)
+            # Analizar la persona detectada
+            gender, description = analyze_person(full_image_path)
 
-            log_entry = f"[{timestamp}] New Person Detected. \n  Gender: {gender}.\n Description: {description}"
+            # Registrar en el log
+            log_entry = f"[{timestamp}] Nueva persona detectada.\n  Género: {gender}.\n  Descripción: {description}\n"
             with open(log_file, "a") as log:
                 log.write(log_entry + "\n")
 
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(
-                frame,
-                f"{gender}", (x1, y1 - 10),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.6, (0, 255, 0), 2)
+    # Detener el proceso después de un tiempo para evitar ejecución infinita
+    # Descomenta esta línea si deseas limitar la ejecución: break
 
-    cv2.imshow('Person Detection', frame)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        breakmodel = [BlipForConditionalGeneration.from_pretrained(
-            "Salesforce/blip-image-captioning-base"
-            ).to(device)]
-
-
+# Liberar recursos
 cap.release()
-cv2.destroyAllWindows()
+print("Proceso finalizado. Las capturas se han guardado en la carpeta detections.")
