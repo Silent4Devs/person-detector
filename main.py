@@ -1,14 +1,34 @@
 import os
+import sys
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Form
+from threading import Thread
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.gzip import GZipMiddleware
 from config.api import detection
+from utils.camera import DetectionTask
+import uvicorn
 
 load_dotenv()
 
+rtsp_url = os.getenv("rtsp_url")
+detection_task = DetectionTask(rtsp_url)
+
+def run_detection():
+    detection_task.start()
+
 app = FastAPI()
+
+def start_background_detection():
+    thread = Thread(target=run_detection, daemon=True)  # Daemon para finalizar con la app
+    thread.start()
+
+start_background_detection()  # Llamar a la función para iniciar la detección al iniciar
+
+# app = FastAPI(
+#     lifespan=lambda app: run_detection()  # Ejecutamos la tarea de detección al iniciar
+# )
 templates = Jinja2Templates(directory="templates")
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
@@ -30,14 +50,4 @@ def get_items(request: Request):
     return templates.TemplateResponse("items.html", {"request": request, "items": items})
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
-
-
-    # # Condicional para decidir si ejecutar `start_detection()`
-    # if "start_detection" in sys.argv:
-    #     from utils.camera import start_detection
-    #     start_detection()
-    # else:
-    #     import uvicorn
-    #     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
