@@ -30,12 +30,14 @@ def get_items(request: Request):
     return templates.TemplateResponse("items.html", {"request": request, "items": items})
 
 if __name__ == "__main__":
-    import sys
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
 
-    # Condicional para decidir si ejecutar `start_detection()`
-    if "start_detection" in sys.argv:
-        from utils.camera import start_detection
-        start_detection()
-    else:
-        import uvicorn
-        uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+
+    # # Condicional para decidir si ejecutar `start_detection()`
+    # if "start_detection" in sys.argv:
+    #     from utils.camera import start_detection
+    #     start_detection()
+    # else:
+    #     import uvicorn
+    #     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
