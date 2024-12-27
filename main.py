@@ -6,7 +6,9 @@ from threading import Thread
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.gzip import GZipMiddleware
-from config.api import detection
+from starlette.responses import JSONResponse
+from routes.detections import detection
+
 from utils.camera import DetectionTask
 import uvicorn
 
@@ -38,16 +40,10 @@ app.include_router(detection)
 app.title = os.getenv("APP_NAME")
 app.version = os.getenv("APP_VERSION")
 
-items = ["Item 1", "Item 2"]
-
 @app.get("/", response_class=HTMLResponse)
-def get_items(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "items": items})
+async def index(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
 
-
-@app.get("/items", response_class=HTMLResponse)
-def get_items(request: Request):
-    return templates.TemplateResponse("items.html", {"request": request, "items": items})
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

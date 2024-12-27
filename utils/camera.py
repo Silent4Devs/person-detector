@@ -3,11 +3,9 @@ import sys
 import os
 from datetime import datetime
 from ultralytics import YOLO
-from deepface import DeepFace
 from dotenv import load_dotenv
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from models.detections import analyze_person, device
-from transformers import BlipForConditionalGeneration
+from utils.detections import analyze_person
 
 load_dotenv()
 
