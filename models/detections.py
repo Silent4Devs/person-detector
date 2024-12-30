@@ -18,3 +18,6 @@ class Detection(BaseModel):
     photo: str
     photo_context: str
     #ia_analysis: str
+
+class PhotoResponse(BaseModel):
+    photo: str
