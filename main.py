@@ -15,20 +15,21 @@ from fastapi.middleware.cors import CORSMiddleware
 
 create_detections_table(get_db_connection())
 
-# detection_task = DetectionTask(rtsp_url)
-#
-# def run_detection():
-#     detection_task.start()
+detection_task = DetectionTask(rtsp_url)
+
+def run_detection():
+    detection_task.start()
 
 app = FastAPI()
 
-# def start_background_detection():
-#     thread = Thread(target=run_detection, daemon=True)  # Daemon para finalizar con la app
-#     thread.start()
-#
-# start_background_detection()  # Llamar a la función para iniciar la detección al iniciar
+def start_background_detection():
+    thread = Thread(target=run_detection, daemon=True)  # Daemon para finalizar con la app
+    thread.start()
+
+start_background_detection()  # Llamar a la función para iniciar la detección al iniciar
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/images", StaticFiles(directory="detections"), name="images")
 templates = Jinja2Templates(directory="templates")
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
@@ -51,4 +52,4 @@ async def index(request: Request):
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=3001, reload=True)

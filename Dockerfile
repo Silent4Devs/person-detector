@@ -34,5 +34,5 @@
 
     COPY . /app
 
-    EXPOSE 8000
+    EXPOSE 3001
     #CMD ["fastapi", "run", "main:app", "--port", "8000"]

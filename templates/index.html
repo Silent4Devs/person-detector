@@ -120,77 +120,6 @@
                     </template>
                 </button>
             </li>
-            <!-- Notifications menu -->
-            <li class="relative">
-                <button
-                        class="relative align-middle rounded-md focus:outline-none focus:shadow-outline-purple"
-                        @click="toggleNotificationsMenu"
-                        @keydown.escape="closeNotificationsMenu"
-                        aria-label="Notifications"
-                        aria-haspopup="true"
-                >
-                    <svg
-                            class="w-5 h-5"
-                            aria-hidden="true"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                    >
-                        <path
-                                d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"
-                        ></path>
-                    </svg>
-                    <!-- Notification badge -->
-                    <span
-                            aria-hidden="true"
-                            class="absolute top-0 right-0 inline-block w-3 h-3 transform translate-x-1 -translate-y-1 bg-red-600 border-2 border-white rounded-full dark:border-gray-800"
-                    ></span>
-                </button>
-                <template x-if="isNotificationsMenuOpen">
-                    <ul
-                            x-transition:leave="transition ease-in duration-150"
-                            x-transition:leave-start="opacity-100"
-                            x-transition:leave-end="opacity-0"
-                            @click.away="closeNotificationsMenu"
-                            @keydown.escape="closeNotificationsMenu"
-                            class="absolute right-0 w-56 p-2 mt-2 space-y-2 text-gray-600 bg-white border border-gray-100 rounded-md shadow-md dark:text-gray-300 dark:border-gray-700 dark:bg-gray-700"
-                    >
-                        <li class="flex">
-                            <a
-                                    class="inline-flex items-center justify-between w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-                                    href="#"
-                            >
-                                <span>Messages</span>
-                                <span
-                                        class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-600 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-600"
-                                >
-                          13
-                        </span>
-                            </a>
-                        </li>
-                        <li class="flex">
-                            <a
-                                    class="inline-flex items-center justify-between w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-                                    href="#"
-                            >
-                                <span>Sales</span>
-                                <span
-                                        class="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-600 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-600"
-                                >
-                          2
-                        </span>
-                            </a>
-                        </li>
-                        <li class="flex">
-                            <a
-                                    class="inline-flex items-center justify-between w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-                                    href="#"
-                            >
-                                <span>Alerts</span>
-                            </a>
-                        </li>
-                    </ul>
-                </template>
-            </li>
             <!-- Profile menu -->
             <li class="relative">
                 <button
@@ -201,8 +130,8 @@
                         aria-haspopup="true"
                 >
                     <img
-                            class="object-cover w-8 h-8 rounded-full"
-                            src="https://images.unsplash.com/photo-1502378735452-bc7d86632805?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&s=aa3a807e1bbdfd4364d1f449eaa96d82"
+                            class="object-cover w-9 h-9 rounded-full"
+                            src="data:image/jpeg;base64,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"
                             alt=""
                             aria-hidden="true"
                     />
@@ -291,41 +220,43 @@
     </div>
 </header>
 <div x-data="{
-        detections: [],
-        loading: false,
-        error: null,
-        lastUpdate: null,
-        pollingInterval: null,
-        async fetchDetections() {
-            this.loading = true;
-            try {
-                const response = await fetch('http://127.0.0.1:8000/detections');
-                this.detections = await response.json();
-                this.lastUpdate = new Date().toLocaleTimeString();
-            } catch (e) {
-                this.error = 'Error fetching detections';
-            } finally {
-                this.loading = false;
-            }
-        },
-        startPolling() {
-            // Inicial fetch
-            this.fetchDetections();
-            // Configurar polling cada 30 segundos
-            this.pollingInterval = setInterval(() => {
-                if (!document.hidden) {
-                    this.fetchDetections();
-                }
-            }, 60000);
-        },
-        stopPolling() {
-            if (this.pollingInterval) {
-                clearInterval(this.pollingInterval);
-            }
+    detections: [],
+    loading: false,
+    error: null,
+    lastUpdate: null,
+    selectedImage: null,
+    showModal: false,
+    pollingInterval: null,
+    async fetchDetections() {
+        this.loading = true;
+        try {
+            const response = await fetch('http://127.0.0.1:8000/detections');
+            this.detections = await response.json();
+            this.lastUpdate = new Date().toLocaleTimeString();
+        } catch (e) {
+            this.error = 'Error fetching detections';
+        } finally {
+            this.loading = false;
         }
-    }"
-    x-init="startPolling"
-    @visibilitychange.window="document.hidden ? stopPolling() : startPolling()">
+    },
+    showFullImage(photo) {
+        this.selectedImage = `/images/${photo}`;
+        this.showModal = true;
+    },
+    closeModal() {
+        this.showModal = false;
+        this.selectedImage = null;
+    },
+    startPolling() {
+        this.fetchDetections();
+        this.pollingInterval = setInterval(() => {
+            if (!document.hidden) {
+                this.fetchDetections();
+            }
+        }, 30000);
+    }
+}"
+     x-init="startPolling">
 
     <!-- Error State -->
     <div x-show="error" x-text="error" style="color: red;"></div>
@@ -360,119 +291,7 @@
                     </div>
                     <span>Refrescar &RightArrow;</span>
                 </button>
-                <!-- Cards -->
-                <div class="grid gap-6 mb-8 md:grid-cols-2 xl:grid-cols-4">
-                    <!-- Card -->
-                    <div
-                            class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-                    >
-                        <div
-                                class="p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500"
-                        >
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                        d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"
-                                ></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <p
-                                    class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
-                            >
-                                Total clients
-                            </p>
-                            <p
-                                    class="text-lg font-semibold text-gray-700 dark:text-gray-200"
-                            >
-                                6389
-                            </p>
-                        </div>
-                    </div>
-                    <!-- Card -->
-                    <div
-                            class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-                    >
-                        <div
-                                class="p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-500"
-                        >
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                        fill-rule="evenodd"
-                                        d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
-                                        clip-rule="evenodd"
-                                ></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <p
-                                    class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
-                            >
-                                Account balance
-                            </p>
-                            <p
-                                    class="text-lg font-semibold text-gray-700 dark:text-gray-200"
-                            >
-                                $ 46,760.89
-                            </p>
-                        </div>
-                    </div>
-                    <!-- Card -->
-                    <div
-                            class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-                    >
-                        <div
-                                class="p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500"
-                        >
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                        d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"
-                                ></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <p
-                                    class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
-                            >
-                                New sales
-                            </p>
-                            <p
-                                    class="text-lg font-semibold text-gray-700 dark:text-gray-200"
-                            >
-                                376
-                            </p>
-                        </div>
-                    </div>
-                    <!-- Card -->
-                    <div
-                            class="flex items-center p-4 bg-white rounded-lg shadow-xs dark:bg-gray-800"
-                    >
-                        <div
-                                class="p-3 mr-4 text-teal-500 bg-teal-100 rounded-full dark:text-teal-100 dark:bg-teal-500"
-                        >
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path
-                                        fill-rule="evenodd"
-                                        d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z"
-                                        clip-rule="evenodd"
-                                ></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <p
-                                    class="mb-2 text-sm font-medium text-gray-600 dark:text-gray-400"
-                            >
-                                Pending contacts
-                            </p>
-                            <p
-                                    class="text-lg font-semibold text-gray-700 dark:text-gray-200"
-                            >
-                                35
-                            </p>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- New Table -->
                 <!-- Loading State -->
                 <div x-show="loading">
                     <div class='w-full'>
@@ -486,10 +305,11 @@
                         <table class="w-full whitespace-no-wrap">
                             <thead>
                             <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                                <th class="px-4 py-3">#</th>
+                                <th class="px-4 py-3"># Registro</th>
                                 <th class="px-4 py-3">Genero</th>
                                 <th class="px-4 py-3">Fecha y hora</th>
                                 <th class="px-4 py-3">Contexto</th>
+                                <th class="px-4 py-3">Foto</th>
                             </tr>
                             </thead>
                             <tbody
@@ -499,13 +319,15 @@
                                 <tr class="text-gray-700 dark:text-gray-400">
                                     <td class="px-4 py-3">
                                         <div class="flex items-center text-sm">
+                                            <!-- Reemplaza la imagen estática por la dinámica -->
                                             <div class="relative hidden w-8 h-8 mr-3 rounded-full md:block">
-                                                <img
-                                                        class="object-cover w-full h-full rounded-full"
-                                                        src="https://images.unsplash.com/flagged/photo-1570612861542-284f4c12e75f?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&ixid=eyJhcHBfaWQiOjE3Nzg0fQ"
-                                                        alt=""
-                                                        loading="lazy"
-                                                />
+                                                <!--                                                <img-->
+                                                <!--                                                        class="object-cover w-full h-full rounded-full"-->
+                                                <!--                                                        :src="`/images/${detection.photo}`"-->
+                                                <!--                                                        :alt="detection.photo_context"-->
+                                                <!--                                                        loading="lazy"-->
+                                                <!--                                                        @click="showFullImage(detection.photo)"-->
+                                                <!--                                                />-->
                                                 <div
                                                         class="absolute inset-0 rounded-full shadow-inner"
                                                         aria-hidden="true"
@@ -524,6 +346,14 @@
                                     </td>
                                     <td class="px-4 py-3 text-sm" x-text="detection.datetime_detected"></td>
                                     <td class="px-4 py-3 text-sm" x-text="detection.photo_context"></td>
+                                    <td class="px-4 py-3">
+                                        <button
+                                                @click="showFullImage(detection.photo)"
+                                                class="px-3 py-1 text-sm font-medium leading-5 text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-md hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple"
+                                        >
+                                            Ver Foto
+                                        </button>
+                                    </td>
                                 </tr>
                             </template>
                             </tbody>
@@ -532,102 +362,147 @@
                     <div
                             class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800"
                     >
-                <span class="flex items-center col-span-3">
-                  Showing 21-30 of 100
-                </span>
-                        <span class="col-span-2"></span>
-                        <!-- Pagination -->
-                        <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
-                  <nav aria-label="Table navigation">
-                    <ul class="inline-flex items-center">
-                      <li>
-                        <button
-                                class="px-3 py-1 rounded-md rounded-l-lg focus:outline-none focus:shadow-outline-purple"
-                                aria-label="Previous"
-                        >
-                          <svg
-                                  aria-hidden="true"
-                                  class="w-4 h-4 fill-current"
-                                  viewBox="0 0 20 20"
-                          >
-                            <path
-                                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                                    clip-rule="evenodd"
-                                    fill-rule="evenodd"
-                            ></path>
-                          </svg>
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                                class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
-                        >
-                          1
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                                class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
-                        >
-                          2
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                                class="px-3 py-1 text-white transition-colors duration-150 bg-purple-600 border border-r-0 border-purple-600 rounded-md focus:outline-none focus:shadow-outline-purple"
-                        >
-                          3
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                                class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
-                        >
-                          4
-                        </button>
-                      </li>
-                      <li>
-                        <span class="px-3 py-1">...</span>
-                      </li>
-                      <li>
-                        <button
-                                class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
-                        >
-                          8
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                                class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"
-                        >
-                          9
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                                class="px-3 py-1 rounded-md rounded-r-lg focus:outline-none focus:shadow-outline-purple"
-                                aria-label="Next"
-                        >
-                          <svg
-                                  class="w-4 h-4 fill-current"
-                                  aria-hidden="true"
-                                  viewBox="0 0 20 20"
-                          >
-                            <path
-                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                    clip-rule="evenodd"
-                                    fill-rule="evenodd"
-                            ></path>
-                          </svg>
-                        </button>
-                      </li>
-                    </ul>
-                  </nav>
-                </span>
-                    </div>
-                </div>
+<!--                <span class="flex items-center col-span-3">-->
+<!--                  Showing 21-30 of 100-->
+<!--                </span>-->
+<!--                        <span class="col-span-2"></span>-->
+<!--                        &lt;!&ndash; Pagination &ndash;&gt;-->
+<!--                        <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">-->
+<!--                  <nav aria-label="Table navigation">-->
+<!--                    <ul class="inline-flex items-center">-->
+<!--                      <li>-->
+<!--                        <button-->
+<!--                                class="px-3 py-1 rounded-md rounded-l-lg focus:outline-none focus:shadow-outline-purple"-->
+<!--                                aria-label="Previous"-->
+<!--                        >-->
+<!--                          <svg-->
+<!--                                  aria-hidden="true"-->
+<!--                                  class="w-4 h-4 fill-current"-->
+<!--                                  viewBox="0 0 20 20"-->
+<!--                          >-->
+<!--                            <path-->
+<!--                                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"-->
+<!--                                    clip-rule="evenodd"-->
+<!--                                    fill-rule="evenodd"-->
+<!--                            ></path>-->
+<!--                          </svg>-->
+<!--                        </button>-->
+<!--                      </li>-->
+<!--                      <li>-->
+<!--                        <button-->
+<!--                                class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"-->
+<!--                        >-->
+<!--                          1-->
+<!--                        </button>-->
+<!--                      </li>-->
+<!--                      <li>-->
+<!--                        <button-->
+<!--                                class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"-->
+<!--                        >-->
+<!--                          2-->
+<!--                        </button>-->
+<!--                      </li>-->
+<!--                      <li>-->
+<!--                        <button-->
+<!--                                class="px-3 py-1 text-white transition-colors duration-150 bg-purple-600 border border-r-0 border-purple-600 rounded-md focus:outline-none focus:shadow-outline-purple"-->
+<!--                        >-->
+<!--                          3-->
+<!--                        </button>-->
+<!--                      </li>-->
+<!--                      <li>-->
+<!--                        <button-->
+<!--                                class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"-->
+<!--                        >-->
+<!--                          4-->
+<!--                        </button>-->
+<!--                      </li>-->
+<!--                      <li>-->
+<!--                        <span class="px-3 py-1">...</span>-->
+<!--                      </li>-->
+<!--                      <li>-->
+<!--                        <button-->
+<!--                                class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"-->
+<!--                        >-->
+<!--                          8-->
+<!--                        </button>-->
+<!--                      </li>-->
+<!--                      <li>-->
+<!--                        <button-->
+<!--                                class="px-3 py-1 rounded-md focus:outline-none focus:shadow-outline-purple"-->
+<!--                        >-->
+<!--                          9-->
+<!--                        </button>-->
+<!--                      </li>-->
+<!--                      <li>-->
+<!--                        <button-->
+<!--                                class="px-3 py-1 rounded-md rounded-r-lg focus:outline-none focus:shadow-outline-purple"-->
+<!--                                aria-label="Next"-->
+<!--                        >-->
+<!--                          <svg-->
+<!--                                  class="w-4 h-4 fill-current"-->
+<!--                                  aria-hidden="true"-->
+<!--                                  viewBox="0 0 20 20"-->
+<!--                          >-->
+<!--                            <path-->
+<!--                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"-->
+<!--                                    clip-rule="evenodd"-->
+<!--                                    fill-rule="evenodd"-->
+<!--                            ></path>-->
+<!--                          </svg>-->
+<!--                        </button>-->
+<!--                      </li>-->
+<!--                    </ul>-->
+<!--                  </nav>-->
+<!--                </span>-->
+<!--                    </div>-->
+<!--                </div>-->
             </div>
         </main>
     </div>
     </body>
+
+    <!-- Modal para imagen completa -->
+    <div x-show="showModal"
+         x-cloak
+         class="fixed inset-0 z-50 overflow-y-auto"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+
+        <!-- Overlay de fondo oscuro -->
+        <div class="fixed inset-0 bg-black bg-opacity-75 transition-opacity"></div>
+
+        <!-- Contenedor del modal -->
+        <div class="flex items-center justify-center min-h-screen p-2">
+            <div class="relative bg-white dark:bg-gray-800 rounded-lg w-[90vw] max-w-6xl m-2"
+                 @click.away="closeModal">
+
+                <!-- Botón cerrar -->
+                <button @click="closeModal"
+                        class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 z-10">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+
+                <!-- Contenedor de la imagen -->
+                <div class="flex justify-center items-center h-[85vh]">
+                    <img :src="selectedImage"
+                         class="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+                         :alt="selectedImage">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estilos necesarios -->
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
 </html>
