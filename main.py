@@ -1,20 +1,15 @@
 import os
-import sys
-from dotenv import load_dotenv
 from fastapi import FastAPI, Request, Form
 from threading import Thread
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.gzip import GZipMiddleware
-from starlette.responses import JSONResponse
 from routes.detections import detection
+from config.whichcamera import rtsp_url
 
 from utils.camera import DetectionTask
 import uvicorn
 
-load_dotenv()
-
-rtsp_url = os.getenv("rtsp_url")
 detection_task = DetectionTask(rtsp_url)
 
 def run_detection():

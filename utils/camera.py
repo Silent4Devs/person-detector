@@ -6,12 +6,13 @@ from ultralytics import YOLO
 from dotenv import load_dotenv
 from utils.detections import analyze_person
 from config.database import get_db_connection, insert_into_database
+from config.whichcamera import rtsp_url
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 load_dotenv()
 
 # Configuración de variables de entorno
-rtsp_url = os.getenv("rtsp_url")
+rtsp_url = rtsp_url
 model_name = os.getenv("MODEL_NAME")
 
 # Crear carpeta para guardar capturas y archivo de registro

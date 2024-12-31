@@ -2,7 +2,7 @@
 FROM python:3.10-slim
 
 
-WORKDIR /code
+WORKDIR /app
 
 
 COPY ./requirements.txt /code/requirements.txt
@@ -14,7 +14,7 @@ RUN apt-get update \
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 
-COPY . /code
+COPY . /app
 
 
 #CMD ["fastapi", "run", "main:app", "--port", "8000"]
