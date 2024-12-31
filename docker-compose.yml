@@ -23,11 +23,17 @@ services:
     build:
       context: "."
       dockerfile: Dockerfile
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 --log-level debug
     container_name: tracker
     restart: unless-stopped
     tty: true
     volumes:
-      - .:/code
+      - .:/code/
+    environment:
+      DB_HOST: mysql-tracker
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
     ports:
       - "8000:8000"
     networks:
