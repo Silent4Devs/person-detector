@@ -1,16 +1,33 @@
-# Use an official Python image as the base
-FROM python:3.9-slim
+FROM python:3.10-slim
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the application files into the container
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libmagic1 \
+    build-essential \
+    libssl-dev \
+    libffi-dev \
+    ffmpeg \
+    libjpeg-dev \
+    zlib1g-dev \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    v4l-utils \
+    && apt-get clean
+
+RUN python3 -m venv /venv
+ENV PATH="/venv/bin:$PATH"
+
+COPY ./requirements.txt /app/requirements.txt
+
+RUN pip install --no-cache-dir --upgrade pip
+
+RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
+
 COPY . /app
 
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Expose port (optional, if needed for API serving)
-EXPOSE 80
-
-# Command to run the Python script
-CMD ["python", "main.py"]
+EXPOSE 8000
+#CMD ["fastapi", "run", "main:app", "--port", "8000"]

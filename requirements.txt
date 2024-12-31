@@ -8,4 +8,11 @@ ultralytics
 python-dotenv
 deepface
 tf-keras
-tensorflow==2.10
+tensorflow-cpu
+mysql-connector-python
+fastapi
+uvicorn
+pydantic
+jinja2
+python-multipart
+fastapi[standard]

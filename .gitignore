@@ -1,3 +1,8 @@
 .env
 yolov8n.pt
+yolov8s.pt
 detections
+
+config/__pycache__/
+
+__pycache__/
