@@ -11,6 +11,7 @@ from utils.camera import DetectionTask
 import uvicorn
 from config.database import get_db_connection
 from config.database import create_detections_table
+from fastapi.middleware.cors import CORSMiddleware
 
 create_detections_table(get_db_connection())
 
@@ -27,9 +28,17 @@ app = FastAPI()
 #
 # start_background_detection()  # Llamar a la función para iniciar la detección al iniciar
 
+app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 app.add_middleware(GZipMiddleware, minimum_size=1000)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # En producción, especifica los orígenes permitidos
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(detection)
 
