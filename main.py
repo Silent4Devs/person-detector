@@ -6,9 +6,12 @@ from fastapi.templating import Jinja2Templates
 from fastapi.middleware.gzip import GZipMiddleware
 from routes.detections import detection
 from config.whichcamera import rtsp_url
-
 from utils.camera import DetectionTask
 import uvicorn
+from config.database import get_db_connection
+from config.database import create_detections_table
+
+create_detections_table(get_db_connection())
 
 detection_task = DetectionTask(rtsp_url)
 

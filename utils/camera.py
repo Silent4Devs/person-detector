@@ -15,13 +15,15 @@ rtsp_url = rtsp_url
 model_name = os.getenv("MODEL_NAME")
 
 # Crear carpeta para guardar capturas y archivo de registro
-output_folder = "detections"
+output_folder = path=os.getenv("path")
+logs_folder = "detections/logs"
 os.makedirs(output_folder, exist_ok=True)
+os.makedirs(logs_folder, exist_ok=True)
 
 # Función para obtener el nombre del archivo de log basado en la fecha actual
 def get_log_file_path():
     current_date = datetime.now().strftime("%Y-%m-%d")
-    return os.path.join(output_folder, f"detection_{current_date}.log")
+    return os.path.join(logs_folder, f"detection_{current_date}.log")
 
 # Cargar modelo YOLO
 yolo_model = YOLO(model_name)
@@ -89,7 +91,8 @@ class DetectionTask:
 
                 if self.is_new_person((x1, y1, x2, y2), current_time, detected_persons, threshold_seconds=70, iou_threshold=0.7):
                     timestamp = current_time.strftime("%Y-%m-%d_%H-%M-%S")
-                    full_image_path = os.path.join(output_folder, f"person_{timestamp}.jpg")
+                    imagen = f"person_{timestamp}.jpg"
+                    full_image_path = os.path.join(output_folder, imagen)
                     # Save image with compression (lower quality for smaller file size)
                     cv2.imwrite(full_image_path, frame, [cv2.IMWRITE_JPEG_QUALITY, 60])  # 60 is the compression quality
 
@@ -105,7 +108,7 @@ class DetectionTask:
                     # Insert the detection event into the database
                     try:
                         conn = get_db_connection()
-                        insert_into_database(conn, gender, timestamp, description, full_image_path)
+                        insert_into_database(conn, gender, timestamp, description, imagen)
                     except Exception as e:
                         print(f"Error al insertar en la base de datos: {e}")
                     finally:
