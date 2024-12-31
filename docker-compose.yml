@@ -27,8 +27,11 @@ services:
     container_name: tracker
     restart: unless-stopped
     tty: true
+    devices:
+      - "/dev/video0:/dev/video0"
     volumes:
       - .:/app/
+      - ./detections:/app/detections
     environment:
       DB_HOST: mysql-tracker
       DB_USER: ${DB_USER}

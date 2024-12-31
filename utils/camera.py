@@ -61,7 +61,7 @@ class DetectionTask:
         self.running = True
         cap = cv2.VideoCapture(self.rtsp_url)
         if not cap.isOpened():
-            print("Error: No se pudo abrir el flujo RTSP.")
+            print(f"Error: No se pudo abrir el flujo RTSP o la cámara en {rtsp_url}.")
             return
 
         detected_persons = {}
