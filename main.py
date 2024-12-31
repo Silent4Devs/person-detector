@@ -4,8 +4,9 @@ from threading import Thread
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.staticfiles import StaticFiles
 from routes.detections import detection
-from config.whichcamera import rtsp_url
+from config.whichcamera import rtsp_url, ENDPOINT
 from utils.camera import DetectionTask
 import uvicorn
 from config.database import get_db_connection
@@ -13,18 +14,18 @@ from config.database import create_detections_table
 
 create_detections_table(get_db_connection())
 
-detection_task = DetectionTask(rtsp_url)
-
-def run_detection():
-    detection_task.start()
+# detection_task = DetectionTask(rtsp_url)
+#
+# def run_detection():
+#     detection_task.start()
 
 app = FastAPI()
 
-def start_background_detection():
-    thread = Thread(target=run_detection, daemon=True)  # Daemon para finalizar con la app
-    thread.start()
-
-start_background_detection()  # Llamar a la función para iniciar la detección al iniciar
+# def start_background_detection():
+#     thread = Thread(target=run_detection, daemon=True)  # Daemon para finalizar con la app
+#     thread.start()
+#
+# start_background_detection()  # Llamar a la función para iniciar la detección al iniciar
 
 templates = Jinja2Templates(directory="templates")
 

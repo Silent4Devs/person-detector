@@ -12,7 +12,7 @@ detection=APIRouter()
 path=os.getenv("path")
 
 @detection.get("/detections", response_model=List[Detection])
-def get_all_detections():
+async def get_all_detections():
     """
     Devuelve todas las detecciones de la base de datos.
     """
@@ -32,7 +32,7 @@ def get_all_detections():
     return detections
 
 @detection.get("/photos")
-def get_photos():
+async def get_photos():
     """
     Devuelve todas las imágenes .jpg en la carpeta detections con un enlace para ver y descargar.
     """
@@ -45,7 +45,7 @@ def get_photos():
 
 # Ruta para devolver una imagen específica y permitir descarga
 @detection.get("/photo/{photo_name}")
-def get_photo(photo_name: str, download: bool = False):
+async def get_photo(photo_name: str, download: bool = False):
     file_path = os.path.join(path, photo_name)
 
     if os.path.exists(file_path):

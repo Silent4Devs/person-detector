@@ -1,44 +1,111 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CameraIA</title>
+    <title>Detecciones - CameraIA</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- HTMX -->
-    <script src="https://unpkg.com/htmx.org"></script>
+    <!-- Preact CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/preact@10.6.1/dist/preact.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/preact@10.6.1/dist/compat.min.js"></script>
+    <!-- Estilos personalizados -->
+    <style>
+        .detection-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .detection-card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .detection-info {
+            margin-top: 10px;
+        }
+        .detection-info h5 {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .detection-info p {
+            margin-bottom: 10px;
+        }
+        .detection-card-footer {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #555;
+        }
+    </style>
 </head>
-<nav class="navbar navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">
-      <img src="https://silent4business.com/img/logo_silent.webp" alt="" width="30" height="24" class="d-inline-block align-text-top">
-      Camara IA
-    </a>
-  </div>
-</nav>
-
-<body class="bg-light">
-    <div class="container mt-5">
-        <div class="card shadow">
-            <div class="card-header text-center bg-primary text-white">
-                <h1 class="h3">Item List</h1>
-            </div>
-            <div class="card-body">
-                <ul id="item-list" class="list-group mb-3">
-                    {% for item in items %}
-                    <li class="list-group-item">{{ item }}</li>
-                    {% endfor %}
-                </ul>
-                <form class="d-flex" hx-post="/add-item" hx-target="#item-list" hx-swap="beforeend" hx-include="#item-input">
-                    <input type="text" id="item-input" name="item" class="form-control me-2" placeholder="Add new item" required>
-                    <button type="submit" class="btn btn-primary">Add Item</button>
-                </form>
-            </div>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="https://silent4business.com/img/logo_silent.webp" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
+                CameraIA
+            </a>
         </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Lista de Detecciones</h1>
+        <div id="detection-list"></div> <!-- Este es el contenedor que será gestionado por Preact -->
     </div>
 
-    <!-- Bootstrap 5 JS and dependencies (optional) -->
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Definir el componente DetectionCard en Preact
+        function DetectionCard({ photo, gender, datetime, context }) {
+            return (
+                <div class="detection-card">
+                    <img src={photo} alt="Detection Image" />
+                    <div class="detection-info">
+                        <h5>Gender: {gender}</h5>
+                        <p><strong>Date/Time:</strong> {datetime}</p>
+                        <p><strong>Context:</strong> {context}</p>
+                    </div>
+                    <div class="detection-card-footer">
+                        <small>Detected on: {datetime}</small>
+                    </div>
+                </div>
+            );
+        }
+
+        // Componente principal para listar las detecciones
+        function DetectionList() {
+            const [detections, setDetections] = React.useState([]);
+
+            // Función para obtener los datos de las detecciones
+            React.useEffect(() => {
+                fetch('/detections')  // Asegúrate de que esta URL devuelva los datos en formato JSON
+                    .then(response => response.json())
+                    .then(data => setDetections(data));
+            }, []);
+
+            return (
+                <div>
+                    {detections.map(detection => (
+                        <DetectionCard
+                            key={detection.id}
+                            photo={`/static/${detection.photo}`}
+                            gender={detection.gender_detected}
+                            datetime={detection.datetime_detected}
+                            context={detection.photo_context}
+                        />
+                    ))}
+                </div>
+            );
+        }
+
+        // Renderizar el componente DetectionList en el contenedor
+        ReactDOM.render(<DetectionList />, document.getElementById('detection-list'));
+    </script>
 </body>
 </html>
