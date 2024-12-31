@@ -9,7 +9,6 @@ from config.database import get_db_connection, insert_into_database
 from config.whichcamera import rtsp_url
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-load_dotenv()
 
 # Configuración de variables de entorno
 rtsp_url = rtsp_url
