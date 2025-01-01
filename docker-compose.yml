@@ -27,8 +27,8 @@ services:
     container_name: tracker
     restart: unless-stopped
     tty: true
-    devices:
-      - "/dev/video0:/dev/video0"
+#    devices:
+#      - "/dev/video0:/dev/video0"
     volumes:
       - .:/app/
       - ./detections:/app/detections
