@@ -38,7 +38,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
     ports:
-      - "8000:8000"
+      - "3001:3001"
     networks:
       - trackernetwork
 
