@@ -230,7 +230,7 @@
     async fetchDetections() {
         this.loading = true;
         try {
-            const response = await fetch('http://127.0.0.1:8000/detections');
+            const response = await fetch('http://127.0.0.1:3001/detections');
             this.detections = await response.json();
             this.lastUpdate = new Date().toLocaleTimeString();
         } catch (e) {
