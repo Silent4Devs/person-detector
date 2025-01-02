@@ -6,28 +6,32 @@ from ultralytics import YOLO
 from dotenv import load_dotenv
 from utils.detections import analyze_person
 from config.database import get_db_connection, insert_into_database
-#from config.whichcamera import rtsp_url
+# from config.whichcamera import rtsp_url
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Configuración de variables de entorno
-#rtsp_url = rtsp_url
-rtsp_url = "rtsp://desarrollo:Password123.@192.168.6.31:554/Streaming/Channels/201"
+# rtsp_url = rtsp_url
+rtsp_url = "rtsp://desarrollo:Password123.@192.168.6.31:554/Streaming/Channels/601"
 model_name = os.getenv("MODEL_NAME")
 
 # Crear carpeta para guardar capturas y archivo de registro
-output_folder = path=os.getenv("path")
+output_folder = path = os.getenv("path")
 logs_folder = "detections/logs"
 os.makedirs(output_folder, exist_ok=True)
 os.makedirs(logs_folder, exist_ok=True)
 
 # Función para obtener el nombre del archivo de log basado en la fecha actual
+
+
 def get_log_file_path():
     current_date = datetime.now().strftime("%Y-%m-%d")
     return os.path.join(logs_folder, f"detection_{current_date}.log")
 
+
 # Cargar modelo YOLO
 yolo_model = YOLO(model_name)
+
 
 class DetectionTask:
     def __init__(self, rtsp_url):
@@ -64,7 +68,8 @@ class DetectionTask:
         self.running = True
         cap = cv2.VideoCapture(self.rtsp_url)
         if not cap.isOpened():
-            print(f"Error: No se pudo abrir el flujo RTSP o la cámara en {rtsp_url}.")
+            print(f"Error: No se pudo abrir el flujo RTSP o la cámara en {
+                  rtsp_url}.")
             return
 
         detected_persons = {}
@@ -84,7 +89,8 @@ class DetectionTask:
                 continue
 
             results = yolo_model(frame, conf=0.5, verbose=False)
-            persons = [box for box in results[0].boxes.data if int(box[-1]) == 0]
+            persons = [
+                box for box in results[0].boxes.data if int(box[-1]) == 0]
 
             for person in persons:
                 x1, y1, x2, y2, conf, cls = map(int, person.tolist())
@@ -95,21 +101,25 @@ class DetectionTask:
                     imagen = f"person_{timestamp}.jpg"
                     full_image_path = os.path.join(output_folder, imagen)
                     # Save image with compression (lower quality for smaller file size)
-                    cv2.imwrite(full_image_path, frame, [cv2.IMWRITE_JPEG_QUALITY, 60])  # 60 is the compression quality
+                    # 60 is the compression quality
+                    cv2.imwrite(full_image_path, frame, [
+                                cv2.IMWRITE_JPEG_QUALITY, 60])
 
                     gender, description = analyze_person(full_image_path)
 
                     # Generate the log file path for the current day
                     log_file = get_log_file_path()
 
-                    log_entry = f"[{timestamp}] Nueva persona detectada.\n  Género: {gender}.\n  Descripción: {description}\n"
+                    log_entry = f"[{timestamp}] Nueva persona detectada.\n  Género: {
+                        gender}.\n  Descripción: {description}\n"
                     with open(log_file, "a") as log:
                         log.write(log_entry + "\n")
 
                     # Insert the detection event into the database
                     try:
                         conn = get_db_connection()
-                        insert_into_database(conn, gender, timestamp, description, imagen)
+                        insert_into_database(
+                            conn, gender, timestamp, description, imagen)
                     except Exception as e:
                         print(f"Error al insertar en la base de datos: {e}")
                     finally:
