@@ -68,7 +68,8 @@ class DetectionTask:
         self.running = True
         cap = cv2.VideoCapture(self.rtsp_url)
         if not cap.isOpened():
-            error = f"Error: No se pudo abrir el flujo RTSP o la cámara en {rtsp_url}."
+            error = f"Error: No se pudo abrir el flujo RTSP o la cámara en {
+                rtsp_url}."
             print(error)
             return
 
@@ -110,8 +111,7 @@ class DetectionTask:
                     # Generate the log file path for the current day
                     log_file = get_log_file_path()
 
-                    log_entry = f"[{timestamp}] Nueva persona detectada.\n  Género: {
-                        gender}.\n  Descripción: {description}\n"
+                    log_entry = f"[{timestamp}] Nueva persona detectada.\n  Género: {gender}.\n  Descripción: {description}\n"
                     with open(log_file, "a") as log:
                         log.write(log_entry + "\n")
 
