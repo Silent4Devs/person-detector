@@ -8,7 +8,6 @@ import os
 from dotenv import load_dotenv
 import mysql.connector
 
-# Cargar variables de entorno desde el archivo .env
 load_dotenv()
 
 # Recuperar las credenciales de conexión

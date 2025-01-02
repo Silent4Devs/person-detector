@@ -22,7 +22,7 @@ async def get_all_detections():
     query = """SELECT *
     FROM detections
     ORDER BY id DESC
-    LIMIT 100"""
+    LIMIT 200"""
     cursor.execute(query)
     detections = cursor.fetchall()
 
