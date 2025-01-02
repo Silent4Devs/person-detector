@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Configuración de variables de entorno
 # rtsp_url = rtsp_url
-rtsp_url = "rtsp://desarrollo:Password123.@192.168.6.31:554/Streaming/Channels/602"
+rtsp_url = "rtsp://desarrollo:Password123.@192.168.6.31:554/Streaming/Channels/201"
 model_name = os.getenv("MODEL_NAME")
 
 # Crear carpeta para guardar capturas y archivo de registro
