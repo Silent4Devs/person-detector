@@ -19,7 +19,10 @@ async def get_all_detections():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
 
-    query = "SELECT * FROM detections ORDER BY id DESC"
+    query = """SELECT *
+    FROM detections
+    ORDER BY id DESC
+    LIMIT 100"""
     cursor.execute(query)
     detections = cursor.fetchall()
 
