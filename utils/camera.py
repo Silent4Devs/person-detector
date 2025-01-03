@@ -163,7 +163,7 @@ class DetectionTask:
                     timestamp = current_time.strftime("%Y-%m-%d_%H-%M-%S")
                     full_image_path = os.path.join(images_folder, f"person_{timestamp}.jpg")
                     # Save image with compression (lower quality for smaller file size)
-                    cv2.imwrite(full_image_path, frame, [cv2.IMWRITE_JPEG_QUALITY, 60])  # 60 is the compression quality
+                    cv2.imwrite(full_image_path, frame, [cv2.IMWRITE_JPEG_QUALITY, 50])  # 60 is the compression quality
 
                     gender, description = analyze_person(full_image_path)
 

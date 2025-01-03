@@ -234,7 +234,7 @@
             this.detections = await response.json();
             this.lastUpdate = new Date().toLocaleTimeString();
         } catch (e) {
-            this.error = 'Error fetching detections';
+            this.error = `Error fetching detections: ${e.message || e}`;
         } finally {
             this.loading = false;
         }
