@@ -29,7 +29,7 @@ def start_background_detection():
 start_background_detection()  # Llamar a la función para iniciar la detección al iniciar
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-app.mount("/detections/images", StaticFiles(directory="detections/images"), name="detections-images")
+app.mount("/", StaticFiles(directory="detections/images"), name="detections-images")
 
 templates = Jinja2Templates(directory="templates")
 
