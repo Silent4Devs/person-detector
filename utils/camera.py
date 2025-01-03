@@ -7,9 +7,10 @@ from dotenv import load_dotenv
 from utils.detections import analyze_person
 from config.database import get_db_connection, insert_into_database
 # from config.whichcamera import rtsp_url
+import subprocess
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+load_dotenv()
 # Configuración de variables de entorno
 rtsp_url = os.getenv("rtsp_url")
 #rtsp_url = "rtsp://desarrollo:Password123.@192.168.6.31:554/Streaming/Channels/602"
@@ -22,8 +23,6 @@ os.makedirs(output_folder, exist_ok=True)
 os.makedirs(logs_folder, exist_ok=True)
 
 # Función para obtener el nombre del archivo de log basado en la fecha actual
-
-
 def get_log_file_path():
     current_date = datetime.now().strftime("%Y-%m-%d")
     return os.path.join(logs_folder, f"detection_{current_date}.log")
@@ -31,7 +30,6 @@ def get_log_file_path():
 
 # Cargar modelo YOLO
 yolo_model = YOLO(model_name)
-
 
 class DetectionTask:
     def __init__(self, rtsp_url):
@@ -60,9 +58,9 @@ class DetectionTask:
             return None
 
     def connect_to_stream(self):
-        # Set OpenCV backend options for HEVC
-        os.environ[
-            "OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "protocol_whitelist;file,rtp,udp,tcp,rtsp|rtsp_transport;tcp|fflags;nobuffer|max_delay;0"
+        os.environ["OPENCV_FFMPEG_CAPTURE_OPTIONS"] = (
+            "protocol_whitelist;file,rtp,udp,tcp,rtsp|rtsp_transport;tcp|fflags;nobuffer|max_delay;0"
+        )
 
         for attempt in range(self.max_retries):
             cap = cv2.VideoCapture(self.rtsp_url, cv2.CAP_FFMPEG)
@@ -72,12 +70,10 @@ class DetectionTask:
                 time.sleep(self.retry_delay)
                 continue
 
-            # Configure stream parameters
             cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-            cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'H265'))
+            cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'H264'))
 
-            # Verify connection with test frame read
-            for _ in range(5):  # Multiple read attempts
+            for _ in range(5):
                 ret, frame = cap.read()
                 if ret and frame is not None:
                     print(f"Successfully connected to RTSP stream on attempt {attempt + 1}")
@@ -116,7 +112,6 @@ class DetectionTask:
     def start(self):
         self.running = True
 
-        # Verify stream codec
         codec = self.verify_stream_format()
         if codec and codec.lower() == 'hevc':
             print("HEVC stream detected, using appropriate configuration")
@@ -149,19 +144,19 @@ class DetectionTask:
                         consecutive_failures = 0
                     continue
 
-                consecutive_failures = 0  # Reset counter on successful frame read
+                consecutive_failures = 0
                 current_time = datetime.now()
 
                 if (current_time - last_capture_time) < capture_interval:
                     continue
 
-                # Rest of your existing detection code...
                 results = yolo_model(frame, conf=0.5, verbose=False)
                 persons = [box for box in results[0].boxes.data if int(box[-1]) == 0]
 
                 for person in persons:
-                    # Your existing person detection code...
-                    pass
+                    bbox = person[:4].tolist()
+                    if self.is_new_person(bbox, current_time, detected_persons):
+                        print(f"New person detected: {bbox}")
 
             except Exception as e:
                 print(f"Error during frame processing: {e}")
