@@ -12,7 +12,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Configuración de variables de entorno
 # rtsp_url = rtsp_url
-rtsp_url = "rtsp://desarrollo:Password123.@192.168.6.31:554/Streaming/Channels/601"
+rtsp_url = "rtsp://desarrollo:Password123.@192.168.6.31:554/Streaming/Channels/602"
 model_name = os.getenv("MODEL_NAME")
 
 # Crear carpeta para guardar capturas y archivo de registro
@@ -60,22 +60,31 @@ class DetectionTask:
             return None
 
     def connect_to_stream(self):
-        """Attempt to connect to the RTSP stream with retries"""
+        # Set OpenCV backend options for HEVC
+        os.environ[
+            "OPENCV_FFMPEG_CAPTURE_OPTIONS"] = "protocol_whitelist;file,rtp,udp,tcp,rtsp|rtsp_transport;tcp|fflags;nobuffer|max_delay;0"
+
         for attempt in range(self.max_retries):
-            cap = cv2.VideoCapture(self.rtsp_url)
+            cap = cv2.VideoCapture(self.rtsp_url, cv2.CAP_FFMPEG)
 
-            cap.set(cv2.CAP_PROP_BUFFERSIZE, 3)
+            if not cap.isOpened():
+                print(f"Connection attempt {attempt + 1} failed, retrying in {self.retry_delay} seconds...")
+                time.sleep(self.retry_delay)
+                continue
 
-            if cap.isOpened():
-                # Test reading a frame to ensure connection is working
-                ret, _ = cap.read()
-                if ret:
+            # Configure stream parameters
+            cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+            cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'H265'))
+
+            # Verify connection with test frame read
+            for _ in range(5):  # Multiple read attempts
+                ret, frame = cap.read()
+                if ret and frame is not None:
                     print(f"Successfully connected to RTSP stream on attempt {attempt + 1}")
                     return cap
-                else:
-                    cap.release()
-            print(f"Connection attempt {attempt + 1} failed, retrying in {self.retry_delay} seconds...")
-            time.sleep(self.retry_delay)
+
+            cap.release()
+
         return None
 
     def calculate_iou(self, box1, box2):
