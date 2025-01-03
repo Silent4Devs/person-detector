@@ -10,7 +10,7 @@
         libswscale-dev \
         libavdevice-dev \
         libx264-dev \
-        libx265-dev
+        libx265-dev \
         libmagic1 \
         build-essential \
         libssl-dev \
