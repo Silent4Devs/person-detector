@@ -17,12 +17,25 @@
         libxext6 \
         v4l-utils \
         tzdata \
-            && ln -sf /usr/share/zoneinfo/America/Mexico_City /etc/localtime \
-            && echo "America/Mexico_City" > /etc/timezone \
-            && dpkg-reconfigure -f noninteractive tzdata \
-            && apt-get clean
+        # Add these new dependencies for HEVC support
+        libx264-dev \
+        libx265-dev \
+        libvpx-dev \
+        libopencv-dev \
+        python3-opencv \
+        # Additional codecs and streaming support
+        libavcodec-dev \
+        libavformat-dev \
+        libswscale-dev \
+        libavdevice-dev \
+        && ln -sf /usr/share/zoneinfo/America/Mexico_City /etc/localtime \
+        && echo "America/Mexico_City" > /etc/timezone \
+        && dpkg-reconfigure -f noninteractive tzdata \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
 
     ENV PYTHONDONTWRITEBYTECODE=1 PYTHONOPTIMIZE=1
+    ENV OPENCV_FFMPEG_CAPTURE_OPTIONS="rtsp_transport;tcp|analyzeduration;10000000|buffer_size;2048000"
     RUN python3 -m venv /venv
     ENV PATH="/venv/bin:$PATH"
 
