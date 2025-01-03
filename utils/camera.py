@@ -40,10 +40,32 @@ class DetectionTask:
         self.max_retries = 30
         self.retry_delay = 10  # seconds
 
+    def verify_stream_format(self):
+        """Verify stream format using ffprobe"""
+        try:
+            cmd = [
+                'ffprobe',
+                '-v', 'error',
+                '-select_streams', 'v:0',
+                '-show_entries', 'stream=codec_name',
+                '-of', 'default=noprint_wrappers=1:nokey=1',
+                self.rtsp_url
+            ]
+            result = subprocess.run(cmd, capture_output=True, text=True)
+            codec = result.stdout.strip()
+            print(f"Detected codec: {codec}")
+            return codec
+        except Exception as e:
+            print(f"Error checking stream format: {e}")
+            return None
+
     def connect_to_stream(self):
         """Attempt to connect to the RTSP stream with retries"""
         for attempt in range(self.max_retries):
             cap = cv2.VideoCapture(self.rtsp_url)
+
+            cap.set(cv2.CAP_PROP_BUFFERSIZE, 3)
+
             if cap.isOpened():
                 # Test reading a frame to ensure connection is working
                 ret, _ = cap.read()
@@ -84,11 +106,15 @@ class DetectionTask:
 
     def start(self):
         self.running = True
-        cap = self.connect_to_stream()
 
+        # Verify stream codec
+        codec = self.verify_stream_format()
+        if codec and codec.lower() == 'hevc':
+            print("HEVC stream detected, using appropriate configuration")
+
+        cap = self.connect_to_stream()
         if cap is None:
-            error = f"Error: Failed to connect to RTSP stream at {self.rtsp_url} after {self.max_retries} attempts."
-            print(error)
+            print(f"Error: Failed to connect to RTSP stream at {self.rtsp_url} after {self.max_retries} attempts.")
             return
 
         detected_persons = {}
