@@ -177,7 +177,7 @@ class DetectionTask:
                     # Insert the detection event into the database
                     try:
                         conn = get_db_connection()
-                        insert_into_database(conn, gender, timestamp, description, full_image_path)
+                        insert_into_database(conn, gender, timestamp, description, f"person_{timestamp}.jpg")
                     except Exception as e:
                         print(f"Error al insertar en la base de datos: {e}")
                     finally:
