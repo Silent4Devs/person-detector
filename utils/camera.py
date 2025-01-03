@@ -19,8 +19,10 @@ model_name = os.getenv("MODEL_NAME")
 # Crear carpeta para guardar capturas y archivo de registro
 output_folder = path = os.getenv("path")
 logs_folder = "detections/logs"
+images_folder = "detections/images"
 os.makedirs(output_folder, exist_ok=True)
 os.makedirs(logs_folder, exist_ok=True)
+os.makedirs(images_folder, exist_ok=True)
 
 # Función para obtener el nombre del archivo de log basado en la fecha actual
 def get_log_file_path():
@@ -159,7 +161,7 @@ class DetectionTask:
                         print(f"New person detected: {bbox}")
 
                     timestamp = current_time.strftime("%Y-%m-%d_%H-%M-%S")
-                    full_image_path = os.path.join(output_folder, f"person_{timestamp}.jpg")
+                    full_image_path = os.path.join(images_folder, f"person_{timestamp}.jpg")
                     # Save image with compression (lower quality for smaller file size)
                     cv2.imwrite(full_image_path, frame, [cv2.IMWRITE_JPEG_QUALITY, 60])  # 60 is the compression quality
 
