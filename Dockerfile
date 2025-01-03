@@ -42,11 +42,15 @@
     RUN python3 -m venv /venv
     ENV PATH="/venv/bin:$PATH"
 
+    RUN pip install uv
+    RUN uv venv
+    # RUN uv pip install -r requirements.txt
+
     COPY ./requirements.txt /app/requirements.txt
 
-    RUN pip install --no-cache-dir --upgrade pip
+    RUN uv pip install --no-cache-dir --upgrade pip
 
-    RUN pip install --no-cache-dir --upgrade --compile -r /app/requirements.txt
+    RUN uv pip install --no-cache-dir --upgrade --compile -r /app/requirements.txt
 
     COPY . /app
 
