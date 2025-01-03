@@ -19,10 +19,7 @@ async def get_all_detections():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
 
-    query = """SELECT *
-    FROM detections
-    ORDER BY id DESC
-    LIMIT 200"""
+    query = "SELECT * FROM detections ORDER BY id DESC"
     cursor.execute(query)
     detections = cursor.fetchall()
 
@@ -31,11 +28,6 @@ async def get_all_detections():
 
     if not detections:
         raise HTTPException(status_code=404, detail="No se encontraron detecciones.")
-
-        # Add the correct URL prefix to the photo field
-    for detection in detections:
-        if 'photo' in detection and detection['photo']:
-            detection['photo'] = f"/detections/images/{detection['photo']}"
 
     return detections
 
