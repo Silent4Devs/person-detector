@@ -158,6 +158,31 @@ class DetectionTask:
                     if self.is_new_person(bbox, current_time, detected_persons):
                         print(f"New person detected: {bbox}")
 
+                    timestamp = current_time.strftime("%Y-%m-%d_%H-%M-%S")
+                    full_image_path = os.path.join(output_folder, f"person_{timestamp}.jpg")
+                    # Save image with compression (lower quality for smaller file size)
+                    cv2.imwrite(full_image_path, frame, [cv2.IMWRITE_JPEG_QUALITY, 60])  # 60 is the compression quality
+
+                    gender, description = analyze_person(full_image_path)
+
+                    # Generate the log file path for the current day
+                    log_file = get_log_file_path()
+
+                    log_entry = f"[{timestamp}] Nueva persona detectada.\n  Género: {gender}.\n  Descripción: {description}\n"
+                    with open(log_file, "a") as log:
+                        log.write(log_entry + "\n")
+
+                    # Insert the detection event into the database
+                    try:
+                        conn = get_db_connection()
+                        insert_into_database(conn, gender, timestamp, description, full_image_path)
+                    except Exception as e:
+                        print(f"Error al insertar en la base de datos: {e}")
+                    finally:
+                        if conn and conn.is_connected():
+                            conn.close()
+
+
             except Exception as e:
                 print(f"Error during frame processing: {e}")
                 consecutive_failures += 1
